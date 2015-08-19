@@ -1,0 +1,24 @@
+{
+  "version": "v4",
+  "repo": "borisyankov/DefinitelyTyped",
+  "ref": "master",
+  "path": "typings",
+  "bundle": "tsd.d.ts",
+  "installed": {
+    "lodash/lodash.d.ts": {
+      "commit": "efa0c1196d7280640e624ac1e7fa604502e7bd63"
+    },
+    "uuid/UUID.d.ts": {
+      "commit": "efa0c1196d7280640e624ac1e7fa604502e7bd63"
+    },
+    "whatwg-fetch/whatwg-fetch.d.ts": {
+      "commit": "efa0c1196d7280640e624ac1e7fa604502e7bd63"
+    },
+    "es6-promise/es6-promise.d.ts": {
+      "commit": "efa0c1196d7280640e624ac1e7fa604502e7bd63"
+    },
+    "bluebird/bluebird.d.ts": {
+      "commit": "efa0c1196d7280640e624ac1e7fa604502e7bd63"
+    }
+  }
+}
