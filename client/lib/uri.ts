@@ -23,7 +23,7 @@ var uriResolvers = {
 };
 
 export function attach(parentUrl) {
-    return function resolveAndAttachUris(result) {
+    return function resolveAndAttachUris<T>(result: T) {
         var children = result._children || [];
 
         children.forEach(function (child) {

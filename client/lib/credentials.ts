@@ -8,7 +8,7 @@ class CredentialsAuthenticator {
     private password: string;
 
     constructor(username, password) {
-        EventEmitter.call(this);
+        //EventEmitter.call(this);
 
         this.username = username;
         this.password = password;

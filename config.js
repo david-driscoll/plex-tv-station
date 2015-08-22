@@ -27,6 +27,7 @@ System.config({
     "url": "npm:url@0.10.3",
     "util": "npm:util@0.10.3",
     "uuid": "npm:uuid@2.0.1",
+    "video.js": "npm:video.js@4.12.13",
     "whatwg-fetch": "npm:whatwg-fetch@0.9.0",
     "xml2js": "npm:xml2js@0.4.10",
     "github:jspm/nodelibs-assert@0.1.0": {
@@ -642,6 +643,12 @@ System.config({
       "crypto": "github:jspm/nodelibs-crypto@0.1.0",
       "os": "github:jspm/nodelibs-os@0.1.0",
       "util": "github:jspm/nodelibs-util@0.1.0"
+    },
+    "npm:video.js@4.12.13": {
+      "buffer": "github:jspm/nodelibs-buffer@0.1.0",
+      "process": "github:jspm/nodelibs-process@0.1.1",
+      "videojs-swf": "npm:videojs-swf@4.7.3",
+      "vtt.js": "github:gkatsev/vtt.js@vjs-v0.12.1"
     },
     "npm:vm-browserify@0.0.4": {
       "indexof": "npm:indexof@0.0.1"

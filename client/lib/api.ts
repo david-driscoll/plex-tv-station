@@ -3,9 +3,10 @@ var url = require('url');
 import Promise = require('bluebird');
 var xml2js = require('xml2js');
 var plexApiHeaders = require('plex-api-headers');
-var uri = require('./uri');
+import uri = require('./uri');
 import {each} from "lodash";
 import credentials from './credentials';
+require('whatwg-fetch');
 
 var PLEX_SERVER_PORT = 32400;
 
@@ -36,14 +37,329 @@ interface APIOptions {
     device?: string;
 }
 
+export module Responses {
+    export interface LibrarySections {
+        size: string;
+        allowSync: string;
+        identifier: string;
+        mediaTagPrefix: string;
+        mediaTagVersion: string;
+        title1: string;
+        directory: LibrarySectionsDirectory[];
+    }
+
+    interface LibrarySectionsDirectory {
+        allowSync: string;
+        art: string;
+        composite: string;
+        filters: string;
+        refreshing: string;
+        thumb: string;
+        key: string;
+        type: string;
+        title: string;
+        agent: string;
+        scanner: string;
+        language: string;
+        uuid: string;
+        updatedAt: string;
+        createdAt: string;
+        location: any;
+    }
+
+    export interface LibrarySectionDirectory {
+        key: string;
+        title: string;
+        secondary: string;
+        prompt: string;
+        search: string;
+    }
+
+    export interface LibrarySection {
+        size: string;
+        allowSync: string;
+        art: string;
+        content: string;
+        identifier: string;
+        mediaTagPrefix: string;
+        mediaTagVersion: string;
+        thumb: string;
+        title1: string;
+        viewGroup: string;
+        viewMode: string;
+        directory: LibrarySectionDirectory[];
+    }
+
+    export interface Root {
+        size: string;
+        allowCameraUpload: string;
+        allowChannelAccess: string;
+        allowSync: string;
+        certificate: string;
+        friendlyName: string;
+        machineIdentifier: string;
+        multiuser: string;
+        myPlex: string;
+        myPlexMappingState: string;
+        myPlexSigninState: string;
+        myPlexSubscription: string;
+        myPlexUsername: string;
+        platform: string;
+        platformVersion: string;
+        requestParametersInCookie: string;
+        sync: string;
+        transcoderActiveVideoSessions: string;
+        transcoderAudio: string;
+        transcoderVideo: string;
+        transcoderVideoBitrates: string;
+        transcoderVideoQualities: string;
+        transcoderVideoResolutions: string;
+        updatedAt: string;
+        version: string;
+        directory: RootResponseDirectory[];
+    }
+
+    interface RootResponseDirectory {
+        count: string;
+        key: string;
+        title: string;
+    }
+
+    export interface Channels {
+        size: string;
+        directory: ChannelsDirectory[];
+    }
+
+    interface ChannelsDirectory {
+        key: string;
+        title: string;
+    }
+
+    export interface Library {
+        size: string;
+        allowSync: string;
+        art: string;
+        content: string;
+        identifier: string;
+        mediaTagPrefix: string;
+        mediaTagVersion: string;
+        title1: string;
+        title2: string;
+        directory: LibraryDirectory[];
+    }
+
+    interface LibraryDirectory {
+        key: string;
+        title: string;
+    }
+
+    export interface Playlist {
+        size: string;
+        playlist: PlaylistItem;
+    }
+
+    interface PlaylistItem {
+        ratingKey: string;
+        key: string;
+        guid: string;
+        type: string;
+        title: string;
+        titleSort: string;
+        summary: string;
+        smart: string;
+        playlistType: string;
+        composite: string;
+        duration: string;
+        leafCount: string;
+        addedAt: string;
+        updatedAt: string;
+        durationInSeconds: string;
+    }
+
+    export interface Server {
+        size: string;
+        server: ServerItem;
+    }
+
+    interface ServerItem {
+        name: string;
+        host: string;
+        address: string;
+        port: string;
+        machineIdentifier: string;
+        version: string;
+    }
+
+    export interface System {
+        noHistory: string;
+        replaceParent: string;
+        size: string;
+        identifier: string;
+        directory: SystemDirectory[];
+    }
+
+    interface SystemDirectory {
+        key: string;
+        title: string;
+        name: string;
+    }
+
+    interface HubGenre {
+        id: string;
+        tag: string;
+    }
+
+    interface HubRole {
+        id: string;
+        tag: string;
+        role: string;
+    }
+
+    interface HubLocation {
+        path: string;
+    }
+
+    interface HubDirectory {
+        ratingKey: string;
+        key: string;
+        parentRatingKey: string;
+        guid: string;
+        type: string;
+        title: string;
+        parentKey: string;
+        parentTitle: string;
+        summary: string;
+        index: string;
+        parentIndex: string;
+        viewCount: string;
+        lastViewedAt: string;
+        thumb: string;
+        art: string;
+        parentThumb: string;
+        parentTheme: string;
+        leafCount: string;
+        viewedLeafCount: string;
+        addedAt: string;
+        updatedAt: string;
+        studio: string;
+        contentRating: string;
+        rating: string;
+        year: string;
+        banner: string;
+        theme: string;
+        duration: string;
+        originallyAvailableAt: string;
+        childCount: string;
+        genre: HubGenre[];
+        role: HubRole[];
+        location: HubLocation;
+    }
+
+    interface HubItem {
+        hubKey: string;
+        type: string;
+        hubIdentifier: string;
+        size: string;
+        title: string;
+        more: string;
+        video: Video | Video[];
+        key: string;
+        directory: HubDirectory[];
+    }
+
+    export interface Hub {
+        size: string;
+        allowSync: string;
+        hub: HubItem[];
+    }
+
+    export interface Video {
+        ratingKey: string;
+        key: string;
+        type: string;
+        title: string;
+        summary: string;
+        thumb: string;
+        art: string;
+        duration: string;
+        addedAt: string;
+        updatedAt: string;
+        chapterSource: string;
+        media: Media | Media[];
+        studio: string;
+        contentRating: string;
+        rating: string;
+        viewCount: string;
+        lastViewedAt: string;
+        year: string;
+        tagline: string;
+        originallyAvailableAt: string;
+        genre: VideoTag[];
+        writer: VideoTag[];
+        director: VideoTag[];
+        country: VideoTag[];
+        role: VideoTag[];
+        viewOffset: string;
+        titleSort: string;
+    }
+
+    interface VideoTag {
+        tag: string;
+    }
+
+    interface MediaPart {
+        id: string;
+        key: string;
+        duration: string;
+        file: string;
+        size: string;
+        container: string;
+    }
+
+    export interface Media {
+        videoResolution: string;
+        id: string;
+        duration: string;
+        bitrate: string;
+        width: string;
+        height: string;
+        aspectRatio: string;
+        audioChannels: string;
+        audioCodec: string;
+        videoCodec: string;
+        container: string;
+        videoFrameRate: string;
+        part: MediaPart;
+    }
+
+    export interface LibrarySectionCategory {
+        size: string;
+        allowSync: string;
+        art: string;
+        identifier: string;
+        librarySectionID: string;
+        librarySectionTitle: string;
+        librarySectionUUID: string;
+        mediaTagPrefix: string;
+        mediaTagVersion: string;
+        thumb: string;
+        title1: string;
+        title2: string;
+        viewGroup: string;
+        viewMode: string;
+        video: Video[];
+    }
+}
+
 export class PlexAPI {
-    private hostname: string;
-    private port: string | number;
+    public hostname: string;
+    public port: string | number;
     private username: string;
     private password: string;
     private authenticator: any;
-    private serverUrl: string;
-    private options: APIOptions;
+    public serverUrl: string;
+    private authToken: any;
+    public options: APIOptions;
 
     constructor(settings: APISettings) {
         this.hostname = settings.hostname;
@@ -68,50 +384,40 @@ export class PlexAPI {
     public getPort = () => this.port;
     public getIdentifier = () => this.options.identifier;
 
-    public query(url) {
+    public query<T>(url: string) {
         if (url === undefined) {
             throw new TypeError('Requires url argument');
         }
 
-        return this._request(url, 'GET', true).then(uri.attach(url));
+        return this._request<T>(url, 'GET', true).then(uri.attach(url));
     }
 
-    public postQuery(url) {
+    public postQuery<T>(url: string) {
         if (url === undefined) {
             throw new TypeError('Requires url argument');
         }
 
-        return this._request(url, 'POST', true).then(uri.attach(url));
+        return this._request<T>(url, 'POST', true).then(uri.attach(url));
     }
 
-    public perform(url) {
+    public perform<T>(url: string) {
         if (url === undefined) {
             throw new TypeError('Requires url argument');
         }
 
-        return this._request(url, 'GET', false);
+        return this._request<T>(url, 'GET', false);
     }
 
-    public find(relativeUrl, criterias) {
-        if (relativeUrl === undefined) {
-            throw new TypeError('Requires url argument');
-        }
-
-        return this.query(relativeUrl).then(function(result) {
-            return filterChildrenByCriterias(result._children, criterias);
-        });
-    }
-
-    private _request(relativeUrl, method, parseResponse) {
+    private _request<T>(relativeUrl, method, parseResponse) {
         var reqUrl = generateRelativeUrl.call(this, relativeUrl);
 
-        var headers = new Headers(<any>plexApiHeaders(this, {
+        var headers = <any>plexApiHeaders(this, {
             'Accept': 'application/json',
             'X-Plex-Token': this.authToken,
             'X-Plex-Username': this.username
-        }));
+        });
 
-        return new Promise((resolve, reject) => {
+        return new Promise<T>((resolve, reject) => {
             window.fetch(reqUrl, {
                 method: method || 'GET',
                 headers
@@ -153,7 +459,7 @@ export class PlexAPI {
                             });
                         }, reject);
                     }
-                    return response.text().then(resolve, reject);
+                    return response.text().then(x => resolve(<any>x), reject);
                 } else {
                     return resolve();
                 }
@@ -194,25 +500,6 @@ export class PlexAPI {
     }
 }
 
-function filterChildrenByCriterias(children, criterias) {
-    var context = {
-        criterias: criterias || {}
-    };
-
-    return children.filter(criteriasMatchChild, context);
-}
-
-function criteriasMatchChild(child) {
-    var criterias = this.criterias;
-
-    return Object.keys(criterias).reduce(function matchCriteria(hasFoundMatch, currentRule) {
-        var regexToMatch = new RegExp(criterias[currentRule]);
-        return regexToMatch.test(child[currentRule]);
-    }, true);
-}
-
 function generateRelativeUrl(relativeUrl) {
     return this.serverUrl + relativeUrl;
 }
-
-export default PlexAPI;
