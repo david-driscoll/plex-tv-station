@@ -1,5 +1,5 @@
 System.config({
-  baseURL: "/",
+  baseURL: "/web/tv/",
   defaultJSExtensions: true,
   transpiler: "none",
   babelOptions: {
